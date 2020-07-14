@@ -10,10 +10,9 @@ class ScanPage {
   }
 
   initMediaStream() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-      .then(mediaStream => {
-        console.log(mediaStream);
-      });
+    navigator.mediaDevices.enumerateDevices().then(res => {
+      console.log(res);
+    });
   }
 
   init() {
