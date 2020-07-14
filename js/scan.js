@@ -83,7 +83,6 @@ class ScanPage {
   async scan() {
     const blob = await this.imageCapture.takePhoto();
     const base64 = await this.blobToBase64(blob);
-    console.log(blob, base64);
     try {
       const scanText = await this.resolveQRCode(base64);
       alert(scanText);
