@@ -8,6 +8,7 @@ class ScanPage {
     this.video = document.querySelector('#camera-view');
 
     this.mediaStream = null;
+    this.imageCapture = null;
   }
 
   testConsole() {
@@ -48,6 +49,10 @@ class ScanPage {
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
       this.mediaStream = mediaStream;
       this.video.srcObject = mediaStream;
+
+      console.log('getVideoTracks', mediaStream.getVideoTracks());
+      const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+      this.imageCapture = new ImageCapture(mediaStreamTrack);
     });
   }
 
