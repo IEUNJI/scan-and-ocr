@@ -1,8 +1,10 @@
 import openConsole from '../utils/openConsole.js';
+import blobToBase64 from '../utils/blobToBase64.js';
+import resolveQRCode from '../utils/resolveQRCode.js';
 
 class ScanPage {
   constructor() {
-    this.operateArea = document.querySelector('.camera-operate');
+    this.operateArea = document.querySelector('#camera-operate');
     this.select = document.querySelector('#camera-picker');
     this.startBtn = document.querySelector('#camera-start');
     this.video = document.querySelector('#camera-view');
@@ -45,6 +47,7 @@ class ScanPage {
 
   initMediaStream() {
     this.mediaStream?.getTracks().forEach(track => track.stop());
+
     const constraints = this.getConstraints();
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
       this.mediaStream = mediaStream;
@@ -52,39 +55,16 @@ class ScanPage {
 
       const mediaStreamTrack = mediaStream.getVideoTracks()[0];
       this.imageCapture = new ImageCapture(mediaStreamTrack);
+
       this.scan();
-    });
-  }
-
-  blobToBase64 = blob => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result;
-        resolve(base64);
-      };
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  resolveQRCode = base64 => {
-    return new Promise((resolve, reject) => {
-      window.qrcode.callback = scanText => {
-        if (scanText === 'error decoding QR Code') {
-          reject(scanText);
-        } else {
-          resolve(scanText);
-        }
-      };
-      window.qrcode.decode(base64);
     });
   }
 
   async scan() {
     const blob = await this.imageCapture.takePhoto();
-    const base64 = await this.blobToBase64(blob);
+    const base64 = await blobToBase64(blob);
     try {
-      const scanText = await this.resolveQRCode(base64);
+      const scanText = await resolveQRCode(base64);
       alert(scanText);
     } catch (e) {
       this.scan();

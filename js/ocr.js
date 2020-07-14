@@ -1,4 +1,5 @@
 import openConsole from '../utils/openConsole.js';
+import blobToBase64 from '../utils/blobToBase64.js';
 
 class OcrPage {
   constructor() {
@@ -12,22 +13,11 @@ class OcrPage {
   bindListeners() {
     this.file.addEventListener('change', async () => {
       const files = [...file.files];
-      const base64s = await Promise.all(files.map(file => this.fileToBase64(file)));
+      const base64s = await Promise.all(files.map(file => blobToBase64(file)));
       this.file.insertAdjacentHTML('afterend', base64s.reduce((acc, base64) => {
         acc += `<p style="width: 100%; line-height: 28px; overflow: auto;">${base64}</p>`;
         return acc;
       }, ''));
-    });
-  }
-
-  fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result;
-        resolve(base64);
-      };
-      reader.readAsDataURL(file);
     });
   }
 
