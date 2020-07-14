@@ -13,6 +13,11 @@ class ScanPage {
     navigator.mediaDevices.enumerateDevices().then(res => {
       console.log(res);
     });
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(mediaStream => {
+        const video = document.querySelector('#camera-view');
+        video.srcObject = mediaStream;
+      });
   }
 
   init() {
