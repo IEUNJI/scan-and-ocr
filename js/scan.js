@@ -6,6 +6,8 @@ class ScanPage {
     this.select = document.querySelector('#camera-picker');
     this.startBtn = document.querySelector('#camera-start');
     this.video = document.querySelector('#camera-view');
+
+    this.mediaStream = null;
   }
 
   testConsole() {
@@ -41,8 +43,10 @@ class ScanPage {
   }
 
   initMediaStream() {
+    this.mediaStream?.getTracks().forEach(track => track.stop());
     const constraints = this.getConstraints();
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
+      this.mediaStream = mediaStream;
       this.video.srcObject = mediaStream;
     });
   }
