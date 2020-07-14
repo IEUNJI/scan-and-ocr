@@ -50,10 +50,46 @@ class ScanPage {
       this.mediaStream = mediaStream;
       this.video.srcObject = mediaStream;
 
-      console.log('getVideoTracks', mediaStream.getVideoTracks());
       const mediaStreamTrack = mediaStream.getVideoTracks()[0];
       this.imageCapture = new ImageCapture(mediaStreamTrack);
+      this.scan();
     });
+  }
+
+  blobToBase64 = blob => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result;
+        resolve(base64);
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  resolveQRCode = base64 => {
+    return new Promise((resolve, reject) => {
+      window.qrcode.callback = scanText => {
+        if (scanText === 'error decoding QR Code') {
+          reject(scanText);
+        } else {
+          resolve(scanText);
+        }
+      };
+      window.qrcode.decode(base64);
+    });
+  }
+
+  async scan() {
+    const blob = await this.imageCapture.takePhoto();
+    const base64 = await this.blobToBase64(blob);
+    console.log(blob, base64);
+    try {
+      const scanText = await this.resolveQRCode(base64);
+      alert(scanText);
+    } catch (e) {
+      this.scan();
+    }
   }
 
   async init() {
